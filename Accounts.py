@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import BaseAPI
-import Login
 import re
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
@@ -21,12 +20,6 @@ class Account(object):
 		pattern = r'<a href="/people/(.*?)" class="zu-top-nav-userinfo ">'
 		result = re.findall(pattern,html)
 		self.userID = result[0]
-
-	def insert_db(self,info):
-		client = MongoClient()
-		db = client.rpv
-		account = db.account
-		account.insert({info['uid']:info})
 
 	def get_userInfo(self):
 		print(self.userID)
@@ -132,11 +125,13 @@ class Account(object):
 				'followers':followers,
 				'scantime':scantime
 				}
-		self.insert_db(info = info)
+
+		client = MongoClient()
+		db = client.rpv
+		person = db.person
+		person.update({'uid':info['uid']},info,True)
 		return info
 
 if __name__ == '__main__':
-	lc = Login.Logincontrol()
-	lc.login()
 	ac = Account()
 	ac.get_userInfo()
