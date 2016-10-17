@@ -21,3 +21,4 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 	url(r'^blog/index/$', views.index),
 ]
+
