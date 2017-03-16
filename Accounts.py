@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import BaseAPI
+from Login import Logincontrol
 import re
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
@@ -18,6 +19,7 @@ class Account(object):
 		url = "https://www.zhihu.com/settings/profile"
 		login_page = self.session.get(url, headers=BaseAPI.get_headers(), allow_redirects=False)
 		html = login_page.text
+		print(login_page);
 		pattern = r'<a href="(.*?)" class="zu-top-nav-userinfo ">'
 		result = re.findall(pattern,html)
 
@@ -149,6 +151,8 @@ class Account(object):
 		
 
 if __name__ == '__main__':
+	lc = Logincontrol()
+	lc.login()
 	global person
 	person = MongoClient().rpv.person
 	ac = Account()

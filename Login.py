@@ -32,11 +32,12 @@ class Logincontrol(object):
 	 	html = index_page.text
 	 	pattern = r'name="_xsrf" value="(.*?)"'
 	 	_xsrf = re.findall(pattern,html)
+	 	print(_xsrf)
 	 	return _xsrf[0]
 
 	def get_captcha(self):
 		t = str(int(time.time() * 1000))
-		captcha_url = "http://www.zhihu.com/captcha.gif?r=" + t + "&type=login"
+		captcha_url = "https://www.zhihu.com/captcha.gif?r=" + t + "&type=login"
 		r = self.session.get(captcha_url,headers=BaseAPI.get_headers())
 		with open("captcha.jpg","wb") as f:
 			f.write(r.content)
@@ -46,7 +47,7 @@ class Logincontrol(object):
 			im.show()
 			im.close()
 		except:
-			print*(u'请到 %s 目录找到captcha.jpg 手动输入' % os.path.abspath('captcha.jpg'))
+			print(u'请到目录找到captcha.jpg 手动输入')
 		captcha = input("please input the captcha\n")
 		return captcha
     
@@ -58,9 +59,9 @@ class Logincontrol(object):
 			pwd = input('请输入密码\n')
 			if re.match(r"^1\d{10}$",account):
 				print('手机号登录')
-				post_url = 'http://www.zhihu.com/login/phone_num'
+				post_url = 'https://www.zhihu.com/login/phone_num'
 				postdata = {
-					'_xsrf':self.get_xsrf("http://www.zhihu.com"),
+					'_xsrf':self.get_xsrf("https://www.zhihu.com"),
 					"password":pwd,
 					"remember_me":"true",
 					"phone_num":account
@@ -71,21 +72,21 @@ class Logincontrol(object):
 				else:
 					print('输入账号有问题')
 					return 0
-				post_url = 'http://www.zhihu.com/login/email' 
+				post_url = 'https://www.zhihu.com/login/email' 
 				postdata = {
-					'_xsrf': self.get_xsrf("http://www.zhihu.com"),
+					'_xsrf': self.get_xsrf("https://www.zhihu.com"),
 					"password":pwd,
 					"remember_me":"true",
 					"email":account
 				}
 			try:
-				login_page = session.session.post(post_url,date=postdata,headers=BaseAPI.get_headers())
+				login_page = self.session.post(post_url,date=postdata,headers=BaseAPI.get_headers())
 				print(login_page.text)
 			except:
 				postdata["captcha"] = self.get_captcha()
 				login_page = self.session.post(post_url,data=postdata,headers=BaseAPI.get_headers())
-				login_code = eval(login_page.text)
-				print(login_code["msg"])
+				# login_code = eval(login_page.text)
+				print(login_page)
 			self.session.cookies.save()
 
 
